@@ -145,7 +145,7 @@ to:
 			"size": xxxxx,
 			"sha1": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 			"previous": [
-          "name": "oceanworld-1.0.5.jar",
+			    "name": "oceanworld-1.0.5.jar",
 			    "size": 897840,
 			    "sha1": "3781c371d14529fba28c7bafdf1bdd2fad602450"
 			]

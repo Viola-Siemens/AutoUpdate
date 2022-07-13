@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Premain-Class: com.hexagram2021.autoupdate.AutoUpdate
+Class-Path: gson-2.9.0.jar

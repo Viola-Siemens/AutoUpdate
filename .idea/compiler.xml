@@ -9,5 +9,6 @@
         <module name="AutoUpdate" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="14" />
   </component>
 </project>

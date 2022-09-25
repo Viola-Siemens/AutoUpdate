@@ -8,14 +8,22 @@ public class AutoUpdate {
     private static final DefaultTableModel Panel = new DefaultTableModel();
     private static final JTable table = new JTable(Panel);
 
+    public static void main(String[] args) {
+        AutoUpdateMain(args[0]);
+    }
+
     public static void premain(String agentArg, Instrumentation inst) {
+        AutoUpdateMain(agentArg);
+    }
+
+    private static void AutoUpdateMain(String agentArg) {
         JFrame frame = new JFrame();
 
         JScrollPane pane = new JScrollPane(table);
         Panel.addColumn("<html><body><p align=\"center\">正在更新客户端</p></body></html>");
         frame.add(pane);
 
-        frame.setTitle("LSC 自动升级程序");
+        frame.setTitle("ECNU Minecraft 客户端模组自动升级程序");
         frame.setSize(800, 450);
         frame.setVisible(true);
 
@@ -42,7 +50,7 @@ public class AutoUpdate {
     private static void genConfig() {
         ConfigHelper config = new ConfigHelper(false);
         if(config.getStatus()) {
-            AutoUpdate.log("Successfully generated config.js");
+            AutoUpdate.log("Successfully generated setup.config");
         }
     }
 

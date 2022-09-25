@@ -15,7 +15,7 @@ public class HttpHelper {
     private boolean status = false;
     public HttpHelper(ConfigHelper config) {
         HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest get = HttpRequest.newBuilder(URI.create(ConfigHelper.URL + "setup.js")).build();
+        HttpRequest get = HttpRequest.newBuilder(URI.create(ConfigHelper.URL + "setup.config")).build();
         HttpResponse<String> response;
         try {
             response = client.send(get, HttpResponse.BodyHandlers.ofString());
@@ -24,7 +24,8 @@ public class HttpHelper {
                 return;
             }
             String message = response.body();
-            JsonObject setup = (JsonObject) JsonParser.parseString(message);
+            JsonParser jsonParser = new JsonParser();
+            JsonObject setup = (JsonObject) jsonParser.parse(message);
 
             List<ConfigHelper.Mod> toDoList = config.solve(setup.getAsJsonArray("mods"));
             for(ConfigHelper.Mod mod: toDoList) {
@@ -56,6 +57,10 @@ public class HttpHelper {
         HttpResponse<Path> response;
         try {
             response = client.send(get, HttpResponse.BodyHandlers.ofFile(Path.of(config.targetPath + "/" + name)));
+            if(response.statusCode() != 200) {
+                AutoUpdate.err("Failed to request. " + response.body());
+                return;
+            }
             AutoUpdate.log("Successfully updated " + response);
         } catch (InterruptedException | IOException e) {
             AutoUpdate.err("Cannot download \"" + name + "\".");

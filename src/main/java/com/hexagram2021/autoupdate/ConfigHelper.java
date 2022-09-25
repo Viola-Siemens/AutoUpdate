@@ -15,7 +15,20 @@ public class ConfigHelper {
 
     public final File filePath = new File("./");
 
-    public record Mod(String name, int size, String sha1) {
+    public static class Mod {
+        final String name;
+        final int size;
+        final String sha1;
+
+        public Mod(String name, int size, String sha1) {
+            this.name = name;
+            this.size = size;
+            this.sha1 = sha1;
+        }
+
+        public String name() { return name; }
+        public int size() { return size; }
+        public String sha1() { return sha1; }
     }
 
     private List<Mod> modList;
@@ -66,7 +79,7 @@ public class ConfigHelper {
 
     public void writeFile() {
         try {
-            File file = new File(filePath + "/setup.js");
+            File file = new File(filePath + "/setup.config");
             if (!file.exists() && !file.createNewFile()) {
                 AutoUpdate.err("Could not create new file " + file);
             } else {
@@ -152,7 +165,8 @@ public class ConfigHelper {
                 AutoUpdate.err("Security Error.");
                 AutoUpdate.err(e.toString());
             }
-        } catch (FileNotFoundException e) {
+            input.close();
+        } catch (IOException e) {
             AutoUpdate.err("Cannot open mod file \"" + inputFile.getName() + "\".");
             AutoUpdate.err(e.toString());
         }
@@ -166,7 +180,8 @@ public class ConfigHelper {
     public List<Mod> solve(JsonArray setupMods) {
         List<Mod> toDo = new ArrayList<>();
         for(JsonElement e: setupMods) {
-            if(e instanceof JsonObject m) {
+            if(e instanceof JsonObject) {
+                JsonObject m = (JsonObject)e;
                 Mod mod = new Mod(m.get("name").getAsString(), m.get("size").getAsInt(), m.get("sha1").getAsString());
                 JsonArray previous = m.get("previous").getAsJsonArray();
 
@@ -181,16 +196,17 @@ public class ConfigHelper {
                         break;
                     }
                     for(JsonElement p: previous) {
-                        if(p instanceof JsonObject prev) {
+                        if(p instanceof JsonObject) {
+                            JsonObject prev = (JsonObject)p;
                             Mod pmod = new Mod(prev.get("name").getAsString(), prev.get("size").getAsInt(), prev.get("sha1").getAsString());
                             if(cmp.name().equals(pmod.name())) {
-                                File toDelete = new File(this.targetPath + "/" + cmp.name());
-                                if(!toDelete.delete()) {
-                                    AutoUpdate.log("Failed to delete \"" + cmp.name() + "\".");
-                                }
-
                                 AutoUpdate.log("Found mod \"" + cmp.name() + "\" that with old version.");
                                 toDo.add(mod);
+
+                                File toDelete = new File(this.targetPath + "/" + cmp.name());
+                                if(!toDelete.delete()) {
+                                    AutoUpdate.err("Failed to delete \"" + cmp.name() + "\".");
+                                }
 
                                 flag = true;
                                 break;
